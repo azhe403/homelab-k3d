@@ -20,7 +20,10 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.5
           args:
-            - start-dev
+            - start
+            - --http-enabled=true
+            - --hostname=keycloak.azhe.my.id
+            - --proxy=edge
           ports:
             - containerPort: 8080
           env:
@@ -34,16 +37,38 @@ spec:
               value: keycloak
             - name: KC_DB_PASSWORD
               value: keycloak
+            - name: KC_HOSTNAME
+              value: keycloak.azhe.my.id
+            - name: KC_HTTP_ENABLED
+              value: "true"
+            - name: KC_PROXY
+              value: edge
             - name: KEYCLOAK_ADMIN
               value: admin
             - name: KEYCLOAK_ADMIN_PASSWORD
               value: admin123
           resources:
             requests:
-              memory: "1Gi"
-              cpu: "500m"
+              memory: "2Gi"
+              cpu: "750m"
               ephemeral-storage: "1Gi"
             limits:
-              memory: "2Gi"
-              cpu: "1"
+              memory: "3Gi"
+              cpu: "1.5"
               ephemeral-storage: "2Gi"
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
