@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-dex-server-config
+  namespace: argocd
+data:
+  config.yaml: |
+    issuer: https://keycloak.azhe.my.id/realms/master
+    storage:
+      type: memory
+    web:
+      http: 0.0.0.0:5556
+    connectors:
+    - type: oidc
+      id: keycloak
+      name: Keycloak
+      config:
+        issuer: https://keycloak.azhe.my.id/realms/master
+        clientID: argocd
+        clientSecret: your-client-secret-here
+        requestedScopes: ["openid", "profile", "email", "groups"]
+    staticClients:
+    - id: argocd
+      redirectURIs:
+      - http://argo.azhe.my.id/api/dex/callback
+      name: ArgoCD
+      secret: ZXhhbXBsZWFwcHNlY3JldA==
