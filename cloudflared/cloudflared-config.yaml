@@ -24,4 +24,7 @@ data:
       - hostname: gitlab.azhe.my.id
         service: http://gitlab-service.gitlab.svc.cluster.local:80
 
+      - hostname: keycloak.azhe.my.id
+        service: http://keycloak-service.keycloak.svc.cluster.local:8080
+
       - service: http_status:404
