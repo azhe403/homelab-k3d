@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-dex-server
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-dex-server
+  template:
+    metadata:
+      labels:
+        app: argocd-dex-server
+    spec:
+      containers:
+      - name: dex
+        image: ghcr.io/dexidp/dex:v2.37.0
+        command:
+        - dex
+        - serve
+        - /etc/dex/cfg/config.yaml
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 5556
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 5556
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        volumeMounts:
+        - name: config
+          mountPath: /etc/dex/cfg
+      volumes:
+      - name: config
+        configMap:
+          name: argocd-dex-server-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-dex-server
+  namespace: argocd
+spec:
+  selector:
+    app: argocd-dex-server
+  ports:
+  - name: http
+    port: 5556
+    targetPort: 5556
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-dex-server-config
+  namespace: argocd
+data:
+  config.yaml: |
+    issuer: http://argocd-dex-server:5556
+    storage:
+      type: memory
+    web:
+      http: 0.0.0.0:5556
+    connectors: []
+    staticClients:
+    - id: argocd
+      redirectURIs:
+      - http://argo.azhe.my.id/api/dex/callback
+      name: ArgoCD
+      secret: ZXhhbXBsZWFwcHNlY3JldA==
