@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik
+  namespace: authentik
+  labels:
+    app: authentik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik
+  template:
+    metadata:
+      labels:
+        app: authentik
+    spec:
+      containers:
+        - name: authentik
+          image: ghcr.io/goauthentik/server:2024.2.2
+          ports:
+            - containerPort: 9000
+            - containerPort: 9443
+          env:
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: postgres-service
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: authentik
+            - name: AUTHENTIK_POSTGRESQL__USER
+              value: authentik
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              value: authentik
+            - name: AUTHENTIK_REDIS__HOST
+              value: redis-service
+            - name: AUTHENTIK_SECRET_KEY
+              value: "this-is-a-secret-key-change-it-in-production"
+            - name: AUTHENTIK_ERROR_REPORTING__ENABLED
+              value: "false"
+            - name: AUTHENTIK_BOOTSTRAP_PASSWORD
+              value: "admin123"
+            - name: AUTHENTIK_BOOTSTRAP_EMAIL
+              value: "admin@authentik.local"
+            - name: AUTHENTIK_LISTEN__HTTP
+              value: "0.0.0.0:9000"
+            - name: AUTHENTIK_DISABLE_ENTERPRISE
+              value: "true"
+            - name: AUTHENTIK_DOMAIN
+              value: "authentik.azhe.my.id"
+          args:
+            - server
+            - --insecure
+            - --workers
+            - "1"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1"

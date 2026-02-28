@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+        - name: gitlab
+          image: gitlab/gitlab-ce:17.9.2-ce.0
+          env:
+            - name: GITLAB_OMNIBUS_CONFIG
+              value: |
+                external_url 'https://gitlab.azhe.my.id'
+                nginx['listen_port'] = 80
+                nginx['listen_https'] = false
+                nginx['proxy_set_headers'] = {
+                  "X-Forwarded-Proto" => "https",
+                  "X-Forwarded-Ssl" => "on"
+                }
+                # Optional: Memory optimizations for homelab
+                prometheus_monitoring['enable'] = false
+                sidekiq['max_concurrency'] = 10
+                puma['worker_processes'] = 2
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 22
+              name: ssh
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 4Gi
+            limits:
+              cpu: 2000m
+              memory: 8Gi
+          volumeMounts:
+            - name: gitlab-data
+              mountPath: /var/opt/gitlab
+            - name: gitlab-logs
+              mountPath: /var/log/gitlab
+            - name: gitlab-config
+              mountPath: /etc/gitlab
+      volumes:
+        - name: gitlab-data
+          persistentVolumeClaim:
+            claimName: gitlab-data-pvc
+        - name: gitlab-logs
+          emptyDir: {}
+        - name: gitlab-config
+          emptyDir: {}

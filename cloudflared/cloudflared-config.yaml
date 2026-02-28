@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+  namespace: cloudflared
+data:
+  config.yaml: |
+    tunnel: e60e7e9c-19f0-404b-809f-ce1fe0f3654f
+    credentials-file: /etc/cloudflared/credentials.json
+
+    ingress:
+      - hostname: argo.azhe.my.id
+        service: http://argocd-server.argocd.svc.cluster.local:80
+
+      - hostname: grafana.azhe.my.id
+        service: http://monitoring-grafana.monitoring.svc.cluster.local:80
+
+      - hostname: authentik.azhe.my.id
+        service: http://authentik-service.authentik.svc.cluster.local:9000
+
+      - hostname: rancher.azhe.my.id
+        service: http://rancher.cattle-system.svc.cluster.local:80
+
+      - hostname: gitlab.azhe.my.id
+        service: http://gitlab-service.gitlab.svc.cluster.local:80
+
+      - service: http_status:404
