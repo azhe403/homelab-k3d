@@ -15,12 +15,16 @@ spec:
       labels:
         app: authentik
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: authentik
-          image: ghcr.io/goauthentik/server:2024.2.2
+          image: ghcr.io/goauthentik/server:2025.12.4
           ports:
             - containerPort: 9000
             - containerPort: 9443
+          volumeMounts:
+            - name: authentik-storage
+              mountPath: /media
           env:
             - name: AUTHENTIK_POSTGRESQL__HOST
               value: postgres-service
@@ -55,6 +59,12 @@ spec:
             requests:
               memory: "1Gi"
               cpu: "500m"
+              ephemeral-storage: "1Gi"
             limits:
               memory: "2Gi"
               cpu: "1"
+              ephemeral-storage: "2Gi"
+      volumes:
+        - name: authentik-storage
+          persistentVolumeClaim:
+            claimName: authentik-pvc
