@@ -15,91 +15,123 @@ The homelab consists of the following components:
 
 ## Project Structure
 
+This repository follows GitOps best practices with a standardized directory structure:
+
 ```
-├── apps/
-│   ├── authentik/          # Authentik identity provider
-│   ├── gitlab/             # GitLab CE deployment
-│   └── keycloak/           # Keycloak identity provider
-├── argocd/                 # ArgoCD GitOps operator
-├── cloudflared/            # Cloudflare tunnel configuration
-├── grafana/                # Grafana monitoring
-├── infra/                  # Infrastructure components
-└── networking/             # Network policies and quotas
+├── base/                           # Base configurations for core components
+│   ├── argocd/                     # ArgoCD GitOps operator
+│   ├── cloudflared/                # Cloudflare tunnel configuration
+│   ├── grafana/                    # Grafana monitoring
+│   └── networking/                 # Network policies and quotas
+├── apps/                           # Application manifests
+│   ├── authentik/                  # Authentik identity provider
+│   │   └── base/                   # Base authentik configuration
+│   ├── gitlab/                     # GitLab CE deployment
+│   │   └── base/                   # Base gitlab configuration
+│   └── keycloak/                   # Keycloak identity provider
+│       └── base/                   # Base keycloak configuration
+├── clusters/                       # Cluster-specific configurations
+│   └── k3d/                        # k3d cluster configuration
+│       ├── base/                   # Base cluster configuration
+│       └── kustomization.yaml      # Cluster entrypoint
+├── scripts/                        # Utility and setup scripts
+├── docs/                           # Documentation and themes
+└── environments/                   # Environment-specific overlays
+    ├── dev/                        # Development environment
+    └── prod/                       # Production environment
 ```
 
-## Deployment Order
+## Deployment
 
-### 1. Infrastructure Setup
+### Using Kustomize (Recommended)
+
+This repository uses Kustomize for manifest management. Deploy the entire stack with:
+
+```bash
+# Deploy to k3d cluster
+kubectl apply -k clusters/k3d/
+
+# Or deploy specific components
+kubectl apply -k base/argocd/
+kubectl apply -k base/cloudflared/
+kubectl apply -k apps/authentik/base/
+```
+
+### Manual Deployment
+
+If you prefer to apply manifests individually:
+
+#### 1. Infrastructure Setup
 ```bash
 # Apply network policies and quotas
-kubectl apply -f networking/
+kubectl apply -f base/networking/
 ```
 
-### 2. ArgoCD Installation
+#### 2. ArgoCD Installation
 ```bash
 # Install ArgoCD operator
-kubectl apply -f argocd/namespace.yaml
-kubectl apply -f argocd/install.yaml
-kubectl apply -f argocd/crd.yaml
+kubectl apply -f base/argocd/namespace.yaml
+kubectl apply -f base/argocd/install.yaml
+kubectl apply -f base/argocd/crd.yaml
 
 # Deploy ArgoCD components
-kubectl apply -f argocd/bootstrap.yaml
-kubectl apply -f argocd/argocd-dex-server.yaml
-kubectl apply -f argocd/argocd-repo-server.yaml
+kubectl apply -f base/argocd/bootstrap.yaml
+kubectl apply -f base/argocd/argocd-dex-server-deployment.yaml
+kubectl apply -f base/argocd/argocd-repo-server.yaml
 
 # Configure external access
-kubectl apply -f argocd/argocd-ingress.yaml
+kubectl apply -f base/argocd/argocd-ingress.yaml
 ```
 
-### 3. Cloudflare Tunnel Setup
+#### 3. Cloudflare Tunnel Setup
 ```bash
 # Deploy Cloudflared for external access
-kubectl apply -f cloudflared/cloudflared-config.yaml
-kubectl apply -f cloudflared/cloudflared-deployment.yaml
+kubectl apply -f base/cloudflared/cloudflared-config.yaml
+kubectl apply -f base/cloudflared/cloudflared-deployment.yaml
 ```
 
-### 4. Application Deployments
+#### 4. Application Deployments
 
-#### Keycloak Identity Provider
+##### Keycloak Identity Provider
 ```bash
-kubectl apply -f apps/keycloak/01-namespace.yaml
-kubectl apply -f apps/keycloak/02-postgres-deployment.yaml
-kubectl apply -f apps/keycloak/03-postgres-service.yaml
-kubectl apply -f apps/keycloak/04-postgres-pvc.yaml
-kubectl apply -f apps/keycloak/05-keycloak-deployment.yaml
-kubectl apply -f apps/keycloak/06-keycloak-service.yaml
-kubectl apply -f apps/keycloak/07-keycloak-ingress.yaml
+kubectl apply -f apps/keycloak/base/01-namespace.yaml
+kubectl apply -f apps/keycloak/base/02-postgres-deployment.yaml
+kubectl apply -f apps/keycloak/base/03-postgres-service.yaml
+kubectl apply -f apps/keycloak/base/04-postgres-pvc.yaml
+kubectl apply -f apps/keycloak/base/05-keycloak-deployment.yaml
+kubectl apply -f apps/keycloak/base/06-keycloak-service.yaml
+kubectl apply -f apps/keycloak/base/07-keycloak-ingress.yaml
 ```
 
-#### Authentik Identity Provider
+##### Authentik Identity Provider
 ```bash
-kubectl apply -f apps/authentik/01-namespace.yaml
-kubectl apply -f apps/authentik/02-redis-deployment.yaml
-kubectl apply -f apps/authentik/03-redis-service.yaml
-kubectl apply -f apps/authentik/04-postgres-deployment.yaml
-kubectl apply -f apps/authentik/05-postgres-service.yaml
-kubectl apply -f apps/authentik/06-postgres-pvc.yaml
-kubectl apply -f apps/authentik/07-authentik-deployment.yaml
-kubectl apply -f apps/authentik/08-authentik-service.yaml
-kubectl apply -f apps/authentik/09-authentik-ingress.yaml
-kubectl apply -f apps/authentik/10-authentik-configmap.yaml
+kubectl apply -f apps/authentik/base/01-namespace.yaml
+kubectl apply -f apps/authentik/base/02-redis-deployment.yaml
+kubectl apply -f apps/authentik/base/03-redis-service.yaml
+kubectl apply -f apps/authentik/base/04-postgres-deployment.yaml
+kubectl apply -f apps/authentik/base/05-postgres-service.yaml
+kubectl apply -f apps/authentik/base/06-postgres-pvc.yaml
+kubectl apply -f apps/authentik/base/07-authentik-deployment.yaml
+kubectl apply -f apps/authentik/base/08-authentik-service.yaml
+kubectl apply -f apps/authentik/base/09-authentik-ingress.yaml
+kubectl apply -f apps/authentik/base/10-authentik-configmap.yaml
 ```
 
-#### GitLab CE
+##### GitLab CE
 ```bash
-kubectl apply -f apps/gitlab/01-pvc.yaml
-kubectl apply -f apps/gitlab/02-deployment.yaml
-kubectl apply -f apps/gitlab/03-service.yaml
+kubectl apply -f apps/gitlab/base/01-pvc.yaml
+kubectl apply -f apps/gitlab/base/02-deployment.yaml
+kubectl apply -f apps/gitlab/base/03-service.yaml
 ```
 
-#### Grafana Monitoring
+##### Grafana Monitoring
 ```bash
-kubectl apply -f grafana/ingress.yaml
+kubectl apply -f base/grafana/ingress.yaml
 ```
 
 ## Cloudflare Tunnel DNS Configuration
 
-The following DNS entries are configured in the Cloudflare tunnel (`cloudflared/cloudflared-config.yaml`):
+The following DNS entries are configured in the Cloudflare tunnel (`base/cloudflared/cloudflared-config.yaml`):
 
 | Service | DNS Hostname | Internal Service URL |
 |---------|-------------|---------------------|

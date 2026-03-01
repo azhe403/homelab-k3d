@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../../base/argocd
+- ../../../base/cloudflared
+- ../../../base/grafana
+- ../../../base/networking
+- ../../../apps/authentik/base
+- ../../../apps/gitlab/base
+- ../../../apps/keycloak/base
