@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flipt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flipt
+  template:
+    metadata:
+      labels:
+        app: flipt
+    spec:
+      containers:
+        - name: flipt
+          image: flipt/flipt:latest
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9000
+              name: grpc
+          env:
+            - name: FLIPT_LOG_LEVEL
+              value: "INFO"
+            - name: FLIPT_SERVER_HTTP_PORT
+              value: "8080"
+            - name: FLIPT_SERVER_GRPC_PORT
+              value: "9000"
+            - name: FLIPT_DB_URL
+              value: "file:///var/opt/flipt/flipt.db"
+            - name: FLIPT_CACHE_ENABLED
+              value: "true"
+            - name: FLIPT_CACHE_BACKEND
+              value: "memory"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: flipt-data
+              mountPath: /var/opt/flipt
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: flipt-data
+          persistentVolumeClaim:
+            claimName: flipt-data-pvc

@@ -12,12 +12,6 @@ data:
       - hostname: argo.azhe.my.id
         service: http://argocd-server.argocd.svc.cluster.local:80
 
-      - hostname: grafana.azhe.my.id
-        service: http://monitoring-grafana.monitoring.svc.cluster.local:80
-
-      - hostname: authentik.azhe.my.id
-        service: http://authentik-service.authentik.svc.cluster.local:9000
-
       - hostname: rancher.azhe.my.id
         service: http://rancher.cattle-system.svc.cluster.local:80
 
@@ -26,5 +20,14 @@ data:
 
       - hostname: keycloak.azhe.my.id
         service: http://keycloak-service.keycloak.svc.cluster.local:8080
+
+      - hostname: flipt.azhe.my.id
+        service: http://flipt-service.flipt-v2.svc.cluster.local:8080
+
+      - hostname: flipt-v1.azhe.my.id
+        service: http://flipt-service.flipt-v1.svc.cluster.local:8080
+
+      - hostname: grafana.azhe.my.id
+        service: http://monitoring-grafana.monitoring.svc.cluster.local:80
 
       - service: http_status:404
