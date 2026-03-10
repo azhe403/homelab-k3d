@@ -140,7 +140,7 @@ The following DNS entries are configured in the Cloudflare tunnel (`base/cloudfl
 | Authentik | `authentik.azhe.my.id` | `http://authentik-service.authentik.svc.cluster.local:9000` |
 | Rancher | `rancher.azhe.my.id` | `http://rancher.cattle-system.svc.cluster.local:80` |
 | GitLab | `gitlab.azhe.my.id` | `http://gitlab-service.gitlab.svc.cluster.local:80` |
-| Keycloak | `keycloak.azhe.my.id` | `http://keycloak-service.keycloak.svc.cluster.local:8080` |
+| HashiCorp Vault | `hashi-vault.azhe.my.id` | `http://vault-service.vault.svc.cluster.local:8200` |
 
 ## Access Information
 
@@ -153,6 +153,11 @@ The following DNS entries are configured in the Cloudflare tunnel (`base/cloudfl
 - **Internal URL**: `http://keycloak-service.keycloak.svc.cluster.local:8080`
 - **External URL**: `https://keycloak.azhe.my.id`
 - **Admin credentials**: `admin / admin123`
+
+### HashiCorp Vault
+- **Internal URL**: `http://vault-service.vault.svc.cluster.local:8200`
+- **External URL**: `https://hashi-vault.azhe.my.id`
+- **Root Token**: `hvs.[PLACEHOLDER]` (check Vault unseal keys secret)
 
 ### Authentik
 - **Internal URL**: `http://authentik-service.authentik.svc.cluster.local:9000`

@@ -30,4 +30,10 @@ data:
       - hostname: grafana.azhe.my.id
         service: http://monitoring-grafana.monitoring.svc.cluster.local:80
 
+      - hostname: hashi-vault.azhe.my.id
+        service: http://vault-service.vault.svc.cluster.local:8200
+
+      - hostname: authentik.azhe.my.id
+        service: http://authentik-service.authentik.svc.cluster.local:9000
+
       - service: http_status:404
