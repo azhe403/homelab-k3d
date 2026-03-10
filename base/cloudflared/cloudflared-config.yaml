@@ -12,9 +12,6 @@ data:
       - hostname: argo.azhe.my.id
         service: http://argocd-server.argocd.svc.cluster.local:80
 
-      - hostname: rancher.azhe.my.id
-        service: http://rancher.cattle-system.svc.cluster.local:80
-
       - hostname: gitlab.azhe.my.id
         service: http://gitlab-service.gitlab.svc.cluster.local:80
 
@@ -35,5 +32,10 @@ data:
 
       - hostname: authentik.azhe.my.id
         service: http://authentik-service.authentik.svc.cluster.local:9000
+
+      - hostname: rancher.azhe.my.id
+        service: https://rancher.cattle-system.svc.cluster.local:443
+        originRequest:
+          noTLSVerify: true
 
       - service: http_status:404

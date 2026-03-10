@@ -9,4 +9,5 @@ resources:
 - ../../../apps/authentik/base
 - ../../../apps/gitlab/base
 - ../../../apps/keycloak/base
+- ../../../apps/rancher/base
 - ../../../apps/vault/base

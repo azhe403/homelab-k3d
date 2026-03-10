@@ -1,0 +1,40 @@
+---
+# Rancher Helm values
+hostname: rancher.azhe.my.id
+replicas: 1
+bootstrapPassword: admin123
+
+# Ingress configuration
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+
+# Resource limits
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Persistence
+persistence:
+  enabled: true
+  storageClass: local-path
+
+# TLS configuration
+tls: external
+
+# Cert-manager integration
+certmanager:
+  enabled: false
+
+# Rancher settings
+rancherImageTag: latest
+systemDefaultRegistry: ""

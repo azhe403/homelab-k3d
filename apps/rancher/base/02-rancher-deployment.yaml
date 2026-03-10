@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rancher
+  namespace: cattle-system
+  labels:
+    app: rancher
+    app.kubernetes.io/name: rancher
+    app.kubernetes.io/component: management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rancher
+  template:
+    metadata:
+      labels:
+        app: rancher
+    spec:
+      serviceAccountName: rancher
+      containers:
+      - name: rancher
+        image: rancher/rancher:latest
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        env:
+        - name: CATTLE_BOOTSTRAP_PASSWORD
+          value: "admin123"
+        - name: CATTLE_SERVER_URL
+          value: "https://rancher.azhe.my.id"
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        volumeMounts:
+        - name: rancher-data
+          mountPath: /var/lib/rancher
+      volumes:
+      - name: rancher-data
+        persistentVolumeClaim:
+          claimName: rancher-data-pvc
