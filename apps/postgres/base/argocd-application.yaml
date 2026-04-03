@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgres
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+spec:
+  project: applications
+  source:
+    repoURL: https://github.com/azhe403/homelab-k3d.git
+    targetRevision: HEAD
+    path: apps/postgres/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: postgres
