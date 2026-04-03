@@ -10,7 +10,6 @@ All hostnames from the tunnel configuration have been successfully added to Clou
 | `gitlab.azhe.my.id` | ✅ Configured | GitLab CE |
 | `keycloak.azhe.my.id` | ✅ Configured | Keycloak |
 | `hashi-vault.azhe.my.id` | ✅ Added | HashiCorp Vault |
-| `authentik.azhe.my.id` | ✅ Configured | Authentik |
 | `grafana.azhe.my.id` | ✅ Configured | Grafana |
 | `rancher.azhe.my.id` | ✅ Added | Rancher |
 | `flipt.azhe.my.id` | ✅ Configured | Flipt v2 |

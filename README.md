@@ -8,7 +8,6 @@ The homelab consists of the following components:
 - **ArgoCD** - GitOps continuous delivery
 - **Cloudflared** - Secure tunnel for external access
 - **Keycloak** - Identity and access management
-- **Authentik** - Alternative identity provider
 - **GitLab** - Git repository management
 - **Grafana** - Monitoring and visualization
 - **Networking** - Network policies and quotas
@@ -24,8 +23,6 @@ This repository follows GitOps best practices with a standardized directory stru
 │   ├── grafana/                    # Grafana monitoring
 │   └── networking/                 # Network policies and quotas
 ├── apps/                           # Application manifests
-│   ├── authentik/                  # Authentik identity provider
-│   │   └── base/                   # Base authentik configuration
 │   ├── gitlab/                     # GitLab CE deployment
 │   │   └── base/                   # Base gitlab configuration
 │   └── keycloak/                   # Keycloak identity provider
@@ -54,7 +51,6 @@ kubectl apply -k clusters/k3d/
 # Or deploy specific components
 kubectl apply -k base/argocd/
 kubectl apply -k base/cloudflared/
-kubectl apply -k apps/authentik/base/
 ```
 
 ### Manual Deployment
@@ -103,19 +99,6 @@ kubectl apply -f apps/keycloak/base/06-keycloak-service.yaml
 kubectl apply -f apps/keycloak/base/07-keycloak-ingress.yaml
 ```
 
-##### Authentik Identity Provider
-```bash
-kubectl apply -f apps/authentik/base/01-namespace.yaml
-kubectl apply -f apps/authentik/base/02-redis-deployment.yaml
-kubectl apply -f apps/authentik/base/03-redis-service.yaml
-kubectl apply -f apps/authentik/base/04-postgres-deployment.yaml
-kubectl apply -f apps/authentik/base/05-postgres-service.yaml
-kubectl apply -f apps/authentik/base/06-postgres-pvc.yaml
-kubectl apply -f apps/authentik/base/07-authentik-deployment.yaml
-kubectl apply -f apps/authentik/base/08-authentik-service.yaml
-kubectl apply -f apps/authentik/base/09-authentik-ingress.yaml
-kubectl apply -f apps/authentik/base/10-authentik-configmap.yaml
-```
 
 ##### GitLab CE
 ```bash

@@ -30,9 +30,6 @@ data:
       - hostname: hashi-vault.azhe.my.id
         service: http://vault-service.vault.svc.cluster.local:8200
 
-      - hostname: authentik.azhe.my.id
-        service: http://authentik-service.authentik.svc.cluster.local:9000
-
       - hostname: rancher.azhe.my.id
         service: https://rancher.cattle-system.svc.cluster.local:443
         originRequest:

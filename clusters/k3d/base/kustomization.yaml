@@ -6,7 +6,6 @@ resources:
 - ../../../base/cloudflared
 - ../../../base/grafana
 - ../../../base/networking
-- ../../../apps/authentik/base
 - ../../../apps/gitlab/base
 - ../../../apps/keycloak/base
 - ../../../apps/rancher/base
