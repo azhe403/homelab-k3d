@@ -7,3 +7,4 @@ resources:
 - 03-deployment.yaml
 - 04-service.yaml
 - 05-pvc.yaml
+- 06-ingress.yaml
