@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: vault
+    app.kubernetes.io/component: secrets-management
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/azhe403/homelab-k3d.git
+    targetRevision: HEAD
+    path: apps/vault/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault

@@ -6,12 +6,7 @@ metadata:
 
 resources:
   - 01-namespace.yaml
-  - 02-serviceaccount.yaml
-  - 03-rbac.yaml
-  - 02-rancher-deployment.yaml
-  - 03-rancher-service.yaml
-  - 04-rancher-pvc.yaml
-  - 05-rancher-ingress.yaml
+  - 04-rancher-helmchart.yaml
 
 labels:
   - pairs:

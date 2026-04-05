@@ -154,14 +154,93 @@ The following DNS entries are configured in the Cloudflare tunnel (`base/cloudfl
 - **Internal URL**: `http://monitoring-grafana.monitoring.svc.cluster.local:3000`
 - **External URL**: `https://grafana.azhe.my.id`
 
-### Rancher (if deployed)
-- **Internal URL**: `http://rancher.cattle-system.svc.cluster.local:80`
-- **External URL**: `https://rancher.azhe.my.id`
+### PostgreSQL
+
+- **Internal URL**: `postgres-service.postgres.svc.cluster.local:5432`
+- **NodePort Access**: `<node-ip>:30432` (direct access)
+- **Cloudflare Tunnel**: `postgres-01.azhe.my.id:5432` (via `cloudflared access tcp`)
+
+## Cluster Setup
+
+### Quick Start with Tailscale IP Auto-Detection
+
+```bash
+# 1. Detect and validate Tailscale IP
+./scripts/detect-tailscale-ip.sh
+
+# 2. Validate Tailscale network
+./scripts/validate-tailscale-network.sh
+
+# 3. Setup cluster with auto-detected Tailscale IP (uses ports 8080/8443)
+./scripts/setup-cluster-tailscale.sh
+
+# 4. Test cluster connectivity
+./scripts/test-cluster.sh
+
+# 5. Deploy all applications
+kubectl apply -k clusters/k3d/
+
+# 6. Check deployment status
+kubectl get pods -A
+```
+
+**Note**: The cluster uses **non-standard ports** (8080/8443) to avoid conflicts with host ports 80/443.
+
+### Port Configuration
+
+| Host Port | Container Port | Service Type | Access URL |
+|-----------|----------------|--------------|------------|
+| 8080 | 80 | HTTP | http://localhost:8080 |
+| 8443 | 443 | HTTPS | https://localhost:8443 |
+| 30000-30100 | 30000-30100 | NodePort | http://localhost:30000-30100 |
+
+### Manual Cluster Setup
+
+#### With Tailscale IP Detection
+```bash
+# Auto-detects Tailscale IP or uses fallback (ports 8080/8443)
+./scripts/setup-cluster-config.sh
+```
+
+#### With Custom Ports
+```bash
+# Using the custom ports script
+./scripts/setup-cluster-custom-ports.sh 8080 8443
+```
+
+#### Using k3d directly (avoiding ports 80/443)
+```bash
+k3d cluster create homelab \
+    --agents 2 \
+    --servers 1 \
+    --port 8080:80@loadbalancer \
+    --port 8443:443@loadbalancer \
+    --k3s-arg --disable=traefik@server:0 \
+    --k3s-arg --disable=servicelb@server:0
+```
+
+### Tailscale Integration
+
+This homelab setup includes automatic Tailscale IP detection and network validation:
+
+- **Auto-detection**: Automatically detects your Tailscale IP address
+- **Network validation**: Tests Tailscale connectivity and configuration
+- **Seamless integration**: Uses Tailscale IP for cluster networking
+- **Peer awareness**: Detects and validates Tailscale peer connections
+
+#### Tailscale Features
+- ✅ Automatic IP detection (100.x.x.x range)
+- ✅ Magic DNS validation
+- ✅ Peer connectivity testing
+- ✅ Internet connectivity through Tailscale
+- ✅ Subnet routing detection
+- ✅ Exit node configuration detection
 
 ## Prerequisites
 
-- k3d cluster configured
+- k3d cluster configured (auto-detected Tailscale IP or manual IP)
 - kubectl configured to access the cluster
+- Tailscale installed and running (for auto IP detection)
 - Cloudflare account with tunnel configured
 - Domain names pointed to Cloudflare tunnel
 

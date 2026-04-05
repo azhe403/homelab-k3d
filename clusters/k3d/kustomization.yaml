@@ -3,3 +3,7 @@ kind: Kustomization
 
 resources:
 - ./base
+- ./argocd-root.yaml
+- ./argocd-infrastructure.yaml
+- ./argocd-apps.yaml
+- ./projects.yaml

@@ -5,20 +5,21 @@ metadata:
   namespace: argocd
 data:
   config.yaml: |
-    issuer: https://keycloak.azhe.my.id/realms/master
+    issuer: http://argocd-dex-server:5556
     storage:
       type: memory
     web:
       http: 0.0.0.0:5556
-    connectors:
-    - type: oidc
-      id: keycloak
-      name: Keycloak
-      config:
-        issuer: https://keycloak.azhe.my.id/realms/master
-        clientID: argocd
-        clientSecret: your-client-secret-here
-        requestedScopes: ["openid", "profile", "email", "groups"]
+    # connectors:
+    # - type: oidc
+    #   id: keycloak
+    #   name: Keycloak
+    #   config:
+    #     issuer: https://keycloak.azhe.my.id/realms/master
+    #     clientID: argocd
+    #     clientSecret: your-client-secret-here
+    #     requestedScopes: ["openid", "profile", "email", "groups"]
+    enablePasswordDB: true
     staticClients:
     - id: argocd
       redirectURIs:

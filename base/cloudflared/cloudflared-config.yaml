@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: cloudflared-config
   namespace: cloudflared
+  labels:
+    app.kubernetes.io/part-of: cloudflared
 data:
   config.yaml: |
     tunnel: e60e7e9c-19f0-404b-809f-ce1fe0f3654f
@@ -12,9 +14,6 @@ data:
       - hostname: argo.azhe.my.id
         service: http://argocd-server.argocd.svc.cluster.local:80
 
-      - hostname: gitlab.azhe.my.id
-        service: http://gitlab-service.gitlab.svc.cluster.local:80
-
       - hostname: keycloak.azhe.my.id
         service: http://keycloak-service.keycloak.svc.cluster.local:8080
 
@@ -22,10 +21,7 @@ data:
         service: http://flipt-service.flipt-v2.svc.cluster.local:8080
 
       - hostname: flipt-v1.azhe.my.id
-        service: http://flipt-service.flipt-v1.svc.cluster.local:8080
-
-      - hostname: grafana.azhe.my.id
-        service: http://monitoring-grafana.monitoring.svc.cluster.local:80
+        service: http://flipt-service.flipt-v2.svc.cluster.local:8080
 
       - hostname: hashi-vault.azhe.my.id
         service: http://vault-service.vault.svc.cluster.local:8200
@@ -35,4 +31,14 @@ data:
         originRequest:
           noTLSVerify: true
 
+      - hostname: pgadmin.azhe.my.id
+        service: http://pgadmin-service.postgres-admin.svc.cluster.local:80
+
       - service: http_status:404
+
+    tcp:
+      - hostname: postgres-01.azhe.my.id
+        service: tcp://postgres-service.postgres.svc.cluster.local:5432
+
+    warp-routing:
+      enabled: true

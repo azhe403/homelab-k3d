@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: identity-provider
+spec:
+  project: applications
+  source:
+    repoURL: https://github.com/azhe403/homelab-k3d.git
+    targetRevision: HEAD
+    path: apps/keycloak/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keycloak

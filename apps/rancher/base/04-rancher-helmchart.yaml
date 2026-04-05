@@ -1,0 +1,29 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: rancher
+  namespace: kube-system
+spec:
+  chart: rancher
+  repo: https://releases.rancher.com/server-charts/stable
+  targetNamespace: cattle-system
+  version: 2.10.1
+  set:
+    hostname: rancher.azhe.my.id
+    replicas: 1
+    bootstrapPassword: admin123
+    ingress.enabled: "true"
+    ingress.ingressClassName: nginx
+    "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/ssl-redirect": "true"
+    "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size": "0"
+    "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-read-timeout": "600"
+    "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-send-timeout": "600"
+    resources.limits.cpu: 1000m
+    resources.limits.memory: 1Gi
+    resources.requests.cpu: 500m
+    resources.requests.memory: 512Mi
+    persistence.enabled: "true"
+    persistence.storageClass: local-path
+    tls: external
+    certmanager.enabled: "false"
+    rancherImageTag: v2.10.1

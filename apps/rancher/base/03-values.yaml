@@ -1,4 +1,3 @@
----
 # Rancher Helm values
 hostname: rancher.azhe.my.id
 replicas: 1

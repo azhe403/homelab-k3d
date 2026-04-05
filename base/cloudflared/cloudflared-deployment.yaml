@@ -18,6 +18,8 @@ spec:
           image: cloudflare/cloudflared:2026.2.0
           args:
             - tunnel
+            - --loglevel
+            - debug
             - run
             - e60e7e9c-19f0-404b-809f-ce1fe0f3654f
           resources:

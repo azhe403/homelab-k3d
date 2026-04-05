@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: core
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-project
+    app.kubernetes.io/component: core
+spec:
+  description: Core infrastructure components
+  sourceRepos:
+  - https://github.com/azhe403/homelab-k3d.git
+  destinations:
+  - namespace: '*'
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  orphanedResources:
+    warn: true

@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: projects
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-projects
+    app.kubernetes.io/component: projects
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/azhe403/homelab-k3d.git
+    targetRevision: HEAD
+    path: projects
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
