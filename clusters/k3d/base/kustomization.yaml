@@ -6,7 +6,7 @@ resources:
 - ../../../base/cloudflared
 - ../../../base/grafana
 - ../../../base/networking
-- ../../../apps/gitlab/base
 - ../../../apps/keycloak/base
 - ../../../apps/rancher/base
 - ../../../apps/vault/base
+- cluster-config.yaml
