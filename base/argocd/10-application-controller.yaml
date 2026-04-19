@@ -17,6 +17,11 @@ spec:
       containers:
       - name: argocd-application-controller
         image: quay.io/argoproj/argocd:v2.8.4
+        env:
+        - name: ARGOCD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         command:
         - argocd-application-controller
         - --status-processors

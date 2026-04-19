@@ -8,7 +8,7 @@ set -e
 echo "🌐 Setting up DNS records for Cloudflare tunnel..."
 
 # Extract hostnames from cloudflared config
-CONFIG_FILE="base/cloudflared/cloudflared-config.yaml"
+CONFIG_FILE="base/cloudflared/02-cloudflared-config.yaml"
 
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "❌ Config file not found: $CONFIG_FILE"

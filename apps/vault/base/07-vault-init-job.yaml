@@ -17,19 +17,29 @@ spec:
             - /bin/sh
             - -c
             - |
-              echo "Waiting for Vault to be ready..."
-              until vault status -address=$VAULT_ADDR; do
+              echo "Initializing Vault (retries until API is reachable)..."
+              while true; do
+                if vault operator init -address=$VAULT_ADDR -key-shares=5 -key-threshold=3 > /vault/init/keys.txt 2> /vault/init/init.err; then
+                  echo "Vault initialized successfully"
+                  KEY1="$(awk -F': ' '/Unseal Key 1:/ {print $2}' /vault/init/keys.txt)"
+                  KEY2="$(awk -F': ' '/Unseal Key 2:/ {print $2}' /vault/init/keys.txt)"
+                  KEY3="$(awk -F': ' '/Unseal Key 3:/ {print $2}' /vault/init/keys.txt)"
+
+                  vault operator unseal -address=$VAULT_ADDR "$KEY1"
+                  vault operator unseal -address=$VAULT_ADDR "$KEY2"
+                  vault operator unseal -address=$VAULT_ADDR "$KEY3"
+
+                  exit 0
+                fi
+
+                if grep -qi "already.*initialized" /vault/init/init.err; then
+                  echo "Vault already initialized"
+                  exit 0
+                fi
+
                 echo "Vault not ready, waiting..."
                 sleep 5
               done
-              
-              if ! vault operator init -address=$VAULT_ADDR -key-shares=5 -key-threshold=3 > /vault/init/keys.txt; then
-                echo "Vault might already be initialized"
-                exit 0
-              fi
-              
-              echo "Vault initialized successfully"
-              echo "Root token and unseal keys saved to /vault/init/keys.txt"
           volumeMounts:
             - name: vault-init-data
               mountPath: /vault/init

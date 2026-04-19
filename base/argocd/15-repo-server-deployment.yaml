@@ -16,6 +16,11 @@ spec:
       containers:
       - name: argocd-repo-server
         image: quay.io/argoproj/argocd:v2.8.4
+        env:
+        - name: ARGOCD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         command:
         - argocd-repo-server
         resources:

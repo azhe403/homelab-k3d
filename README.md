@@ -66,24 +66,24 @@ kubectl apply -f base/networking/
 #### 2. ArgoCD Installation
 ```bash
 # Install ArgoCD operator
-kubectl apply -f base/argocd/namespace.yaml
+kubectl apply -f base/argocd/01-namespace.yaml
 kubectl apply -f base/argocd/install.yaml
 kubectl apply -f base/argocd/crd.yaml
 
 # Deploy ArgoCD components
 kubectl apply -f base/argocd/bootstrap.yaml
-kubectl apply -f base/argocd/argocd-dex-server-deployment.yaml
+kubectl apply -f base/argocd/17-argocd-dex-server-deployment.yaml
 kubectl apply -f base/argocd/argocd-repo-server.yaml
 
 # Configure external access
-kubectl apply -f base/argocd/argocd-ingress.yaml
+kubectl apply -f base/argocd/20-argocd-ingress.yaml
 ```
 
 #### 3. Cloudflare Tunnel Setup
 ```bash
 # Deploy Cloudflared for external access
-kubectl apply -f base/cloudflared/cloudflared-config.yaml
-kubectl apply -f base/cloudflared/cloudflared-deployment.yaml
+kubectl apply -f base/cloudflared/02-cloudflared-config.yaml
+kubectl apply -f base/cloudflared/03-cloudflared-deployment.yaml
 ```
 
 #### 4. Application Deployments
@@ -109,12 +109,12 @@ kubectl apply -f apps/gitlab/base/03-service.yaml
 
 ##### Grafana Monitoring
 ```bash
-kubectl apply -f base/grafana/ingress.yaml
+kubectl apply -f base/grafana/02-ingress.yaml
 ```
 
 ## Cloudflare Tunnel DNS Configuration
 
-The following DNS entries are configured in the Cloudflare tunnel (`base/cloudflared/cloudflared-config.yaml`):
+The following DNS entries are configured in the Cloudflare tunnel (`base/cloudflared/02-cloudflared-config.yaml`):
 
 | Service | DNS Hostname | Internal Service URL |
 |---------|-------------|---------------------|
@@ -141,6 +141,40 @@ The following DNS entries are configured in the Cloudflare tunnel (`base/cloudfl
 - **Internal URL**: `http://vault-service.vault.svc.cluster.local:8200`
 - **External URL**: `https://hashi-vault.azhe.my.id`
 - **Root Token**: `hvs.[PLACEHOLDER]` (check Vault unseal keys secret)
+
+### Permanent Vault Port-Forward (Local)
+
+```bash
+kubectl -n vault port-forward svc/vault-service 8200:8200 --address 127.0.0.1
+```
+
+To keep it running in the background, use the provided script:
+
+```bash
+./scripts/port-forward-vault.sh
+```
+
+To run it as a user service (systemd), copy [vault-port-forward.service](file:///mnt/Zuhrah/Projekts/Space/homelab-k3d/systemd/vault-port-forward.service) to `~/.config/systemd/user/` and adjust the paths if needed:
+
+```bash
+mkdir -p ~/.config/systemd/user
+cp systemd/vault-port-forward.service ~/.config/systemd/user/vault-port-forward.service
+systemctl --user daemon-reload
+systemctl --user enable --now vault-port-forward.service
+systemctl --user status vault-port-forward.service
+```
+
+### Vault Access Alternatives
+
+- **Cloudflare Tunnel (Recommended)**: use `hashi-vault.azhe.my.id` via cloudflared.
+- **NodePort (Local/LAN)**: apply the NodePort overlay:
+
+```bash
+kubectl apply -k apps/vault/overlays/nodeport/
+```
+
+Then access Vault at `http://<any-node-ip>:32000`.
+
 
 ### Authentik
 - **Internal URL**: `http://authentik-service.authentik.svc.cluster.local:9000`

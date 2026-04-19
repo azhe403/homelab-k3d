@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+  namespace: cloudflared
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      serviceAccountName: cloudflared
+      initContainers:
+        - name: vault-agent
+          image: hashicorp/vault:1.17.2
+          args:
+            - agent
+            - -config=/etc/vault/agent.hcl
+            - -exit-after-auth
+          env:
+            - name: VAULT_ADDR
+              value: http://vault-service.vault.svc.cluster.local:8200
+          volumeMounts:
+            - name: vault-agent-config
+              mountPath: /etc/vault
+              readOnly: true
+            - name: creds
+              mountPath: /creds
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2026.3.0
+          args:
+            - tunnel
+            - --loglevel
+            - debug
+            - --config
+            - /etc/cloudflared/config.yaml
+            - run
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared/config.yaml
+              subPath: config.yaml
+              readOnly: true
+            - name: creds
+              mountPath: /etc/cloudflared/creds
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: cloudflared-config
+        - name: vault-agent-config
+          configMap:
+            name: cloudflared-vault-agent
+        - name: creds
+          emptyDir: {}

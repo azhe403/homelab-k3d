@@ -15,6 +15,7 @@ spec:
       labels:
         app: vault
     spec:
+      serviceAccountName: vault
       containers:
         - name: vault
           image: hashicorp/vault:1.17.2
@@ -55,15 +56,15 @@ spec:
               cpu: "500m"
           readinessProbe:
             httpGet:
-              path: /v1/sys/health
+              path: /v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200
               port: 8200
-            initialDelaySeconds: 300
+            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /v1/sys/health
+              path: /v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200
               port: 8200
-            initialDelaySeconds: 300
+            initialDelaySeconds: 10
             periodSeconds: 20
       volumes:
         - name: vault-data

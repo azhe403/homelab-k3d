@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-vault-agent
+  namespace: cloudflared
+data:
+  agent.hcl: |
+    pid_file = "/tmp/pidfile"
+
+    auto_auth {
+      method "kubernetes" {
+        mount_path = "auth/kubernetes"
+        config = {
+          role = "cloudflared"
+        }
+      }
+
+      sink "file" {
+        config = {
+          path = "/tmp/.vault-token"
+        }
+      }
+    }
+
+    template {
+      source = "/etc/vault/credentials.json.tpl"
+      destination = "/creds/credentials.json"
+    }
+  credentials.json.tpl: |
+    {{- with secret "secret/data/cloudflared" -}}
+    {
+      "AccountTag": "{{ .Data.data.AccountTag }}",
+      "TunnelSecret": "{{ .Data.data.TunnelSecret }}",
+      "TunnelID": "{{ .Data.data.TunnelID }}"
+    }
+    {{- end -}}

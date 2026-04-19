@@ -9,3 +9,4 @@ resources:
 - 05-vault-deployment.yaml
 - 06-vault-ingress.yaml
 - 07-vault-init-job.yaml
+- 08-vault-serviceaccount-rbac.yaml

@@ -8,7 +8,7 @@ metadata:
 data:
   config.yaml: |
     tunnel: e60e7e9c-19f0-404b-809f-ce1fe0f3654f
-    credentials-file: /etc/cloudflared/credentials.json
+    credentials-file: /etc/cloudflared/creds/credentials.json
 
     ingress:
       - hostname: argo.azhe.my.id
@@ -27,9 +27,7 @@ data:
         service: http://vault-service.vault.svc.cluster.local:8200
 
       - hostname: rancher.azhe.my.id
-        service: https://rancher.cattle-system.svc.cluster.local:443
-        originRequest:
-          noTLSVerify: true
+        service: http://rancher.cattle-system.svc.cluster.local:80
 
       - hostname: pgadmin.azhe.my.id
         service: http://pgadmin-service.postgres-admin.svc.cluster.local:80

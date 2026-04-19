@@ -14,6 +14,8 @@ All hostnames from the tunnel configuration have been successfully added to Clou
 | `rancher.azhe.my.id` | ✅ Added | Rancher |
 | `flipt.azhe.my.id` | ✅ Configured | Flipt v2 |
 | `flipt-v1.azhe.my.id` | ✅ Configured | Flipt v1 |
+| `pgadmin.azhe.my.id` | ✅ Added | pgAdmin |
+| `postgres-01.azhe.my.id` | ✅ Added | PostgreSQL TCP |
 
 ## 🔧 Management Commands
 

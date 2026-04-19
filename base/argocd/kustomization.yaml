@@ -3,23 +3,23 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-  - namespace.yaml
-  - argocd-crd.yaml
-  - serviceaccount.yaml
-  - serviceaccount-controller.yaml
-  - configmap.yaml
-  - argocd-rbac-cm.yaml
-  - secret.yaml
-  - deployment.yaml
-  - service.yaml
-  - application-controller.yaml
-  - clusterrole-server.yaml
-  - clusterrolebinding-server.yaml
-  - clusterrole-controller.yaml
-  - clusterrolebinding-controller.yaml
-  - repo-server-deployment.yaml
-  - repo-server-service.yaml
-  - argocd-dex-server-deployment.yaml
-  - argocd-dex-server-service.yaml
-  - argocd-dex-server-config.yaml
-  - argocd-ingress.yaml
+  - 01-namespace.yaml
+  - 02-argocd-crd.yaml
+  - 03-serviceaccount.yaml
+  - 04-serviceaccount-controller.yaml
+  - 05-configmap.yaml
+  - 06-argocd-rbac-cm.yaml
+  - 07-secret.yaml
+  - 08-deployment.yaml
+  - 09-service.yaml
+  - 10-application-controller.yaml
+  - 11-clusterrole-server.yaml
+  - 12-clusterrolebinding-server.yaml
+  - 13-clusterrole-controller.yaml
+  - 14-clusterrolebinding-controller.yaml
+  - 15-repo-server-deployment.yaml
+  - 16-repo-server-service.yaml
+  - 17-argocd-dex-server-deployment.yaml
+  - 18-argocd-dex-server-service.yaml
+  - 19-argocd-dex-server-config.yaml
+  - 20-argocd-ingress.yaml

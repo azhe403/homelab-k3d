@@ -1,0 +1,135 @@
+# === SECURITY: SENSITIVE FILES ===
+# Kubernetes secrets and credentials
+**/*-secret*.yaml
+**/*-credentials*.yaml
+**/secrets/
+**/credentials/
+
+# Cloudflare credentials
+.cloudflared/
+**/cloudflared-credentials-*.json
+**/tunnel-credentials*.json
+
+# HashiCorp Vault
+**/vault-unseal-keys*.yaml
+**/vault-root-token*.yaml
+**/vault-credentials*.json
+
+# TLS/SSL certificates
+**/*.pem
+**/*.key
+**/*.crt
+**/*.ca-bundle
+**/certificates/
+**/ssl/
+
+# API keys and tokens
+**/api-keys.*
+**/tokens.*
+**/.env
+**/.env.local
+**/.env.production
+**/config/secrets.*
+
+# Database credentials
+**/db-credentials.*
+**/database-credentials.*
+
+# === INFRASTRUCTURE AS CODE ===
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfvars
+**/terraform.tfvars.json
+**/*.auto.tfvars
+
+# Helm
+charts/*.tgz
+**/values.local.yaml
+**/values.prod.yaml
+**/secrets.yaml
+
+# Kustomize
+**/kustomization.local.yaml
+**/patches/local-*
+
+# === DEVELOPMENT TOOLS ===
+# IDE and editors
+.vscode/
+.idea/
+.serena/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# === LOGS AND TEMPORARY FILES ===
+*.log
+*.tmp
+*.temp
+responses.txt
+temp-config.yaml
+logs/
+tmp/
+temp/
+
+# === BACKUP AND GENERATED FILES ===
+**/*.backup
+**/*.bak
+**/*~
+**/backup/
+**/backups/
+
+# === OS SPECIFIC ===
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# === BUILD ARTIFACTS ===
+**/bin/
+**/target/
+**/dist/
+**/build/
+**/out/
+
+# === PACKAGE MANAGERS ===
+node_modules/
+package-lock.json
+yarn.lock
+vendor/
+composer.lock
+
+# === SPECIFIC TO HOMELAB ===
+# Local configuration files
+**/config.local.yaml
+**/config.dev.yaml
+**/config.prod.yaml
+**/local-overrides.yaml
+
+# Service-specific sensitive data
+**/gitlab-rails-secret*
+**/argocd-secret*
+**/keycloak-admin-credentials*
+**/authentik-credentials*
+**/grafana-admin-credentials*
+
+# Monitoring and metrics data
+**/prometheus-data/
+**/grafana-data/
+**/alertmanager-data/
