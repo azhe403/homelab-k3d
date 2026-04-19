@@ -21,6 +21,9 @@ spec:
               while true; do
                 if vault operator init -address=$VAULT_ADDR -key-shares=5 -key-threshold=3 > /vault/init/keys.txt 2> /vault/init/init.err; then
                   echo "Vault initialized successfully"
+                  mkdir -p /vault/data/bootstrap
+                  cp /vault/init/keys.txt /vault/data/bootstrap/keys.txt
+                  chmod 600 /vault/data/bootstrap/keys.txt
                   KEY1="$(awk -F': ' '/Unseal Key 1:/ {print $2}' /vault/init/keys.txt)"
                   KEY2="$(awk -F': ' '/Unseal Key 2:/ {print $2}' /vault/init/keys.txt)"
                   KEY3="$(awk -F': ' '/Unseal Key 3:/ {print $2}' /vault/init/keys.txt)"
@@ -43,6 +46,11 @@ spec:
           volumeMounts:
             - name: vault-init-data
               mountPath: /vault/init
+            - name: vault-data
+              mountPath: /vault/data
       volumes:
         - name: vault-init-data
           emptyDir: {}
+        - name: vault-data
+          persistentVolumeClaim:
+            claimName: vault-data-pvc
