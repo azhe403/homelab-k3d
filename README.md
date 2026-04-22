@@ -253,6 +253,19 @@ k3d cluster create homelab \
     --k3s-arg --disable=servicelb@server:0
 ```
 
+### With Persistent Storage (Recommended)
+For true data persistence across cluster recreations, use the persistent storage setup:
+
+```bash
+# This creates a cluster with host path volumes for PostgreSQL, Vault, and GitLab data
+./scripts/setup-cluster-with-persistent-storage.sh
+```
+
+This setup mounts the following host directories into the cluster:
+- **PostgreSQL**: `/data/homelab-data/postgres-keycloak` → `/homelab-data/postgres-keycloak`
+- **Vault**: `/data/homelab-data/vault` → `/homelab-data/vault`
+- **GitLab**: `/data/homelab-data/gitlab` → `/homelab-data/gitlab`
+
 ### Tailscale Integration
 
 This homelab setup includes automatic Tailscale IP detection and network validation:
@@ -281,10 +294,17 @@ This homelab setup includes automatic Tailscale IP detection and network validat
 ## Configuration Notes
 
 - All applications use persistent storage for data persistence
+- **PostgreSQL data persists across cluster recreations** using hostPath volumes
 - Network policies restrict inter-service communication
 - Resource quotas prevent resource exhaustion
 - External access is managed through Cloudflare tunnel for security
 - SSL/TLS termination handled by Cloudflare
+
+### Data Persistence
+- PostgreSQL data is stored in `/data/homelab-data/postgres-keycloak` on the host
+- Vault data is stored in `/data/homelab-data/vault` on the host
+- GitLab data is stored in `/data/homelab-data/gitlab` on the host
+- Data survives cluster recreation when using the persistent storage setup script
 
 ## Troubleshooting
 

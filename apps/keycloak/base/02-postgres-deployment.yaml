@@ -44,5 +44,6 @@ spec:
               ephemeral-storage: "1Gi"
       volumes:
         - name: postgres-storage
-          persistentVolumeClaim:
-            claimName: keycloak-postgres-pvc
+          hostPath:
+            path: /homelab-data/postgres-keycloak
+            type: DirectoryOrCreate
