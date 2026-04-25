@@ -45,8 +45,7 @@ k3d cluster create "${CLUSTER_NAME}" \
     --volume "${POSTGRES_DIR}:/homelab-data/postgres-keycloak@agent:0" \
     --volume "${HOST_DATA_DIR}/vault:/homelab-data/vault@agent:1" \
     --volume "${HOST_DATA_DIR}/gitlab:/homelab-data/gitlab@agent:0" \
-    --k3s-arg --disable=traefik@server:0 \
-    --k3s-arg --disable=servicelb@server:0
+    --k3s-arg "--service-node-port-range=1-65535@server:0"
 
 echo -e "${GREEN}✅ Cluster created successfully!${NC}"
 

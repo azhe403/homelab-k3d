@@ -86,6 +86,8 @@ kubectl apply -f base/cloudflared/02-cloudflared-config.yaml
 kubectl apply -f base/cloudflared/03-cloudflared-deployment.yaml
 ```
 
+For tunnel creation, DNS routing, and storing the tunnel credentials in Vault, see [docs/cloudflared-vault-setup.md](file:///mnt/Zuhrah/Projekts/Space/homelab-k3d/docs/cloudflared-vault-setup.md).
+
 #### 4. Application Deployments
 
 ##### Keycloak Identity Provider
@@ -191,8 +193,15 @@ Then access Vault at `http://<any-node-ip>:32000`.
 ### PostgreSQL
 
 - **Internal URL**: `postgres-service.postgres.svc.cluster.local:5432`
-- **NodePort Access**: `<node-ip>:30432` (direct access)
+- **NodePort Access**: `<node-ip>:31432` (direct access)
+- **ZeroTier/LAN (recommended)**: publish the NodePort via k3d loadbalancer, then use `<host-zerotier-ip>:31432`
 - **Cloudflare Tunnel**: `postgres-01.azhe.my.id:5432` (via `cloudflared access tcp`)
+
+To publish the Postgres NodePort on a specific host interface (example: ZeroTier IP):
+
+```bash
+k3d node edit k3d-homelab-serverlb --port-add <host-ip>:31432:31432
+```
 
 ## Cluster Setup
 
@@ -226,7 +235,7 @@ kubectl get pods -A
 |-----------|----------------|--------------|------------|
 | 8080 | 80 | HTTP | http://localhost:8080 |
 | 8443 | 443 | HTTPS | https://localhost:8443 |
-| 30000-30100 | 30000-30100 | NodePort | http://localhost:30000-30100 |
+| 1-65535 | 1-65535 | NodePort | tcp://<host>:<nodeport> |
 
 ### Manual Cluster Setup
 
@@ -248,9 +257,7 @@ k3d cluster create homelab \
     --agents 2 \
     --servers 1 \
     --port 8080:80@loadbalancer \
-    --port 8443:443@loadbalancer \
-    --k3s-arg --disable=traefik@server:0 \
-    --k3s-arg --disable=servicelb@server:0
+    --port 8443:443@loadbalancer
 ```
 
 ### With Persistent Storage (Recommended)

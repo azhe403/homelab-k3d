@@ -8,4 +8,5 @@ resources:
   - ../../../apps/keycloak/base
   - ../../../apps/rancher/base
   - ../../../apps/vault/base
-  - cluster-config.yaml
+  - cluster-config-configmap.yaml
+  - network-config-configmap.yaml

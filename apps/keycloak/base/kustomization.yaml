@@ -5,7 +5,6 @@ resources:
 - 01-namespace.yaml
 - 02-postgres-deployment.yaml
 - 03-postgres-service.yaml
-- 04-postgres-pvc.yaml
 - 05-keycloak-deployment.yaml
 - 06-keycloak-service.yaml
 - 07-keycloak-ingress.yaml

@@ -4,7 +4,8 @@ namespace: argocd
 
 resources:
   - 01-namespace.yaml
-  - 02-argocd-crd.yaml
+  - 02-argocd-crd-applications.yaml
+  - 02-argocd-crd-appprojects.yaml
   - 03-serviceaccount.yaml
   - 04-serviceaccount-controller.yaml
   - 05-configmap.yaml
