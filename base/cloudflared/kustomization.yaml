@@ -7,3 +7,4 @@ resources:
   - 03-cloudflared-deployment.yaml
   - 04-serviceaccount.yaml
   - 05-vault-agent-config.yaml
+  - 06-cloudflared-hpa.yaml
