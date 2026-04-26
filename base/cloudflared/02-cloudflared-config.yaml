@@ -32,6 +32,12 @@ data:
       - hostname: pgadmin.azhe.my.id
         service: http://pgadmin-service.postgres-admin.svc.cluster.local:80
 
+      - hostname: devapi-k8s-altodo-student-mgmt.azhe.my.id
+        service: http://dev-altodo-student-mgmt-gateway.dev-altodo-student-mgmt.svc.cluster.local:80
+
+      - hostname: devapi-k8s-altodo-student-mgmt-master-4p8pcm.azhe.my.id
+        service: http://dev-altodo-student-mgmt-master.dev-altodo-student-mgmt.svc.cluster.local:80
+
       - service: http_status:404
 
     tcp:
