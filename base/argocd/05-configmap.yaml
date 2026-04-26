@@ -8,3 +8,6 @@ metadata:
     app.kubernetes.io/part-of: argocd
 data:
   url: https://argo.azhe.my.id
+  resource.customizations.ignoreDifferences.apps_Deployment: |
+    jsonPointers:
+    - /spec/replicas
