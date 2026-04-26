@@ -10,7 +10,6 @@ resources:
   - 04-serviceaccount-controller.yaml
   - 05-configmap.yaml
   - 06-argocd-rbac-cm.yaml
-  - 07-secret.yaml
   - 08-deployment.yaml
   - 09-service.yaml
   - 10-application-controller.yaml
