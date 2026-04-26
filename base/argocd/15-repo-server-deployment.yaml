@@ -21,6 +21,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: ARGOCD_GIT_REQUEST_TIMEOUT
+          value: 300s
+        - name: ARGOCD_EXEC_TIMEOUT
+          value: 300s
         command:
         - argocd-repo-server
         resources:

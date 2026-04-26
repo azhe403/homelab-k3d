@@ -28,6 +28,8 @@ spec:
         - "10"
         - --operation-processors
         - "10"
+        - --repo-server-timeout-seconds
+        - "300"
         resources:
           requests:
             memory: "128Mi"

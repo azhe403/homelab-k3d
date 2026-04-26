@@ -15,3 +15,9 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: flipt-v2
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

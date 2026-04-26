@@ -15,3 +15,9 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: postgres
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
