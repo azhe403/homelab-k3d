@@ -1,56 +1,99 @@
 apiVersion: batch/v1
-kind: Job
+kind: CronJob
 metadata:
   name: vault-init
   namespace: vault
 spec:
-  template:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
     spec:
-      restartPolicy: OnFailure
-      containers:
-        - name: vault-init
-          image: hashicorp/vault:1.17.2
-          env:
-            - name: VAULT_ADDR
-              value: "http://vault-service.vault.svc.cluster.local:8200"
-          command:
-            - /bin/sh
-            - -c
-            - |
-              echo "Initializing Vault (retries until API is reachable)..."
-              while true; do
-                if vault operator init -address=$VAULT_ADDR -key-shares=5 -key-threshold=3 > /vault/init/keys.txt 2> /vault/init/init.err; then
-                  echo "Vault initialized successfully"
-                  mkdir -p /vault/data/bootstrap
-                  cp /vault/init/keys.txt /vault/data/bootstrap/keys.txt
-                  chmod 600 /vault/data/bootstrap/keys.txt
-                  KEY1="$(awk -F': ' '/Unseal Key 1:/ {print $2}' /vault/init/keys.txt)"
-                  KEY2="$(awk -F': ' '/Unseal Key 2:/ {print $2}' /vault/init/keys.txt)"
-                  KEY3="$(awk -F': ' '/Unseal Key 3:/ {print $2}' /vault/init/keys.txt)"
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: vault-init
+              image: hashicorp/vault:1.17.2
+              env:
+                - name: VAULT_ADDR
+                  value: "http://vault-service.vault.svc.cluster.local:8200"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
 
-                  vault operator unseal -address=$VAULT_ADDR "$KEY1"
-                  vault operator unseal -address=$VAULT_ADDR "$KEY2"
-                  vault operator unseal -address=$VAULT_ADDR "$KEY3"
+                  wait_for_vault() {
+                    i=0
+                    while [ "$i" -lt 60 ]; do
+                      if vault status -address="$VAULT_ADDR" >/dev/null 2>&1; then
+                        return 0
+                      fi
+                      i=$((i + 1))
+                      sleep 2
+                    done
+                    echo "Vault API not reachable at $VAULT_ADDR" >&2
+                    return 1
+                  }
 
-                  exit 0
-                fi
+                  vault_status_value() {
+                    key="$1"
+                    vault status -address="$VAULT_ADDR" 2>/dev/null | awk -v k="$key" '$1 == k {print $2}'
+                  }
 
-                if grep -qi "already.*initialized" /vault/init/init.err; then
-                  echo "Vault already initialized"
-                  exit 0
-                fi
+                  unseal_from_file() {
+                    keys_file="$1"
+                    if [ ! -f "$keys_file" ]; then
+                      echo "Unseal keys file not found: $keys_file" >&2
+                      return 1
+                    fi
 
-                echo "Vault not ready, waiting..."
-                sleep 5
-              done
-          volumeMounts:
+                    KEY1="$(awk -F': ' '/Unseal Key 1:/ {print $2}' "$keys_file")"
+                    KEY2="$(awk -F': ' '/Unseal Key 2:/ {print $2}' "$keys_file")"
+                    KEY3="$(awk -F': ' '/Unseal Key 3:/ {print $2}' "$keys_file")"
+
+                    vault operator unseal -address="$VAULT_ADDR" "$KEY1" >/dev/null
+                    vault operator unseal -address="$VAULT_ADDR" "$KEY2" >/dev/null
+                    vault operator unseal -address="$VAULT_ADDR" "$KEY3" >/dev/null
+                  }
+
+                  wait_for_vault
+
+                  INITIALIZED="$(vault_status_value Initialized || true)"
+                  SEALED="$(vault_status_value Sealed || true)"
+
+                  if [ "$INITIALIZED" != "true" ]; then
+                    umask 077
+                    mkdir -p /vault/init /vault/data/bootstrap
+
+                    if vault operator init -address="$VAULT_ADDR" -key-shares=5 -key-threshold=3 > /vault/init/keys.txt 2> /vault/init/init.err; then
+                      cp /vault/init/keys.txt /vault/data/bootstrap/keys.txt
+                      chmod 600 /vault/data/bootstrap/keys.txt
+                      unseal_from_file /vault/init/keys.txt
+                      exit 0
+                    fi
+
+                    if grep -qi "already.*initialized" /vault/init/init.err; then
+                      INITIALIZED="true"
+                    else
+                      cat /vault/init/init.err >&2 || true
+                      exit 1
+                    fi
+                  fi
+
+                  if [ "$INITIALIZED" = "true" ] && [ "$SEALED" = "true" ]; then
+                    unseal_from_file /vault/data/bootstrap/keys.txt
+                  fi
+              volumeMounts:
+                - name: vault-init-data
+                  mountPath: /vault/init
+                - name: vault-data
+                  mountPath: /vault/data
+          volumes:
             - name: vault-init-data
-              mountPath: /vault/init
+              emptyDir: {}
             - name: vault-data
-              mountPath: /vault/data
-      volumes:
-        - name: vault-init-data
-          emptyDir: {}
-        - name: vault-data
-          persistentVolumeClaim:
-            claimName: vault-data-pvc
+              persistentVolumeClaim:
+                claimName: vault-data-pvc
