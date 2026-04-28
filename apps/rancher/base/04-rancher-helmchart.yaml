@@ -19,9 +19,9 @@ spec:
     "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-read-timeout": "600"
     "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-send-timeout": "600"
     resources.limits.cpu: 1000m
-    resources.limits.memory: 1Gi
+    resources.limits.memory: 2048Mi
     resources.requests.cpu: 500m
-    resources.requests.memory: 512Mi
+    resources.requests.memory: 1024Mi
     persistence.enabled: "true"
     persistence.storageClass: local-path
     tls: external
