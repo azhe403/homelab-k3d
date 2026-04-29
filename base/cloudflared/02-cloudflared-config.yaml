@@ -35,6 +35,12 @@ data:
       - hostname: devapi-k8s-altodo-student-mgmt.azhe.my.id
         service: http://dev-altodo-student-mgmt-gateway.dev-altodo-student-mgmt.svc.cluster.local:80
 
+      - hostname: devapi-k8s-altodo-notification.azhe.my.id
+        service: http://dev-altodo-student-mgmt-notification.dev-altodo-student-mgmt.svc.cluster.local:80
+
+      - hostname: devapi-k8s-altodo-student-mgmt-notification-4p8pcm.azhe.my.id
+        service: http://dev-altodo-student-mgmt-notification.dev-altodo-student-mgmt.svc.cluster.local:80
+
       - hostname: devapi-k8s-altodo-student-mgmt-master-4p8pcm.azhe.my.id
         service: http://dev-altodo-student-mgmt-master.dev-altodo-student-mgmt.svc.cluster.local:80
 
