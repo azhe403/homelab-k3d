@@ -28,7 +28,8 @@ spec:
                   wait_for_vault() {
                     i=0
                     while [ "$i" -lt 60 ]; do
-                      if vault status -address="$VAULT_ADDR" >/dev/null 2>&1; then
+                      STATUS_OUT="$(vault status -address="$VAULT_ADDR" 2>/dev/null || true)"
+                      if echo "$STATUS_OUT" | grep -q "^Sealed"; then
                         return 0
                       fi
                       i=$((i + 1))
