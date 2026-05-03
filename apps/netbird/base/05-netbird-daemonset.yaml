@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: netbird
+  namespace: netbird
+spec:
+  selector:
+    matchLabels:
+      app: netbird
+  template:
+    metadata:
+      labels:
+        app: netbird
+    spec:
+      serviceAccountName: netbird
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      initContainers:
+        - name: vault-agent
+          image: hashicorp/vault:1.17.2
+          args:
+            - agent
+            - -config=/etc/vault/agent.hcl
+            - -exit-after-auth
+          env:
+            - name: VAULT_ADDR
+              value: http://vault-service.vault.svc.cluster.local:8200
+          volumeMounts:
+            - name: vault-agent-config
+              mountPath: /etc/vault
+              readOnly: true
+            - name: creds
+              mountPath: /creds
+      containers:
+        - name: netbird
+          image: netbirdio/netbird:latest
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              export NB_SETUP_KEY="$(cat /etc/netbird/setup-key)"
+              netbird service run &
+              daemon_pid="$!"
+
+              i=0
+              while [ ! -S /var/run/netbird.sock ] && [ "$i" -lt 30 ]; do
+                i=$((i + 1))
+                sleep 1
+              done
+
+              netbird up --setup-key "$NB_SETUP_KEY" --management-url "${NB_MANAGEMENT_URL:-https://api.netbird.io:443}" || true
+
+              wait "$daemon_pid"
+          envFrom:
+            - configMapRef:
+                name: netbird-config
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_ADMIN
+                - SYS_RESOURCE
+          volumeMounts:
+            - name: tun
+              mountPath: /dev/net/tun
+            - name: state
+              mountPath: /var/lib/netbird
+            - name: creds
+              mountPath: /etc/netbird
+              readOnly: true
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+      volumes:
+        - name: vault-agent-config
+          configMap:
+            name: netbird-vault-agent
+        - name: creds
+          emptyDir: {}
+        - name: tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+        - name: state
+          hostPath:
+            path: /var/lib/netbird
+            type: DirectoryOrCreate

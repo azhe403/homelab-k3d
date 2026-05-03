@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netbird-config
+  namespace: netbird
+data:
+  NB_MANAGEMENT_URL: https://api.netbird.io:443

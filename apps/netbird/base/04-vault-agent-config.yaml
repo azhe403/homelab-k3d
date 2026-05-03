@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netbird-vault-agent
+  namespace: netbird
+data:
+  agent.hcl: |
+    pid_file = "/tmp/pidfile"
+
+    auto_auth {
+      method "kubernetes" {
+        mount_path = "auth/kubernetes"
+        config = {
+          role = "netbird"
+        }
+      }
+
+      sink "file" {
+        config = {
+          path = "/tmp/.vault-token"
+        }
+      }
+    }
+
+    template {
+      source = "/etc/vault/setup-key.tpl"
+      destination = "/creds/setup-key"
+    }
+  setup-key.tpl: |
+    {{- with secret "secret/data/netbird" -}}
+    {{ .Data.data.SetupKey }}
+    {{- end -}}
